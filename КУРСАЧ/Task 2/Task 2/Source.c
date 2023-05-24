@@ -1,96 +1,79 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
+#include <stdlib.h>
 
-#define N_MIN 6
-#define N_MAX 10
+#define size 100
 
-void manualInput(int arr[N_MAX][N_MAX], int n) {
-    printf("Enter the elements of the matrix:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            scanf_s("%d", &arr[i][j]);
-        }
-    }
-}
+void manualInput(); //ability to input N x N matrix by hand
+void randomInput(); //ability to randomly input N x N matrix
+void formVector(); //Form vector and shows difference in highest and lowest value by module
+void displayArray(); //Show full array 
 
-void randomFill(int arr[N_MAX][N_MAX], int n) {
+int main() {
+    int array[size][size];
+    int N, ch;
+
     srand(time(NULL));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            arr[i][j] = rand() % 10; // Generate random numbers between 0 and 9
+
+    printf("Enter the size of the matrix (6 <= N <= 10): ");
+    scanf("%d", &N);
+
+    if (N < 6 || N > 10) { //Fail check
+        printf("Invalid size....");
+        return 1;
+    }
+
+    printf("Choose type of input ( 1- Manual, 2 - Random): ");
+    scanf("%d", &ch);
+    
+    switch (ch) //option of input
+    {
+    case 1:manualInput(array, N);
+        break;
+    case 2:randomInput(array, N);
+        break;
+    default:printf("Invalid option.");
+        return 1;
+    }
+
+    displayArray(array, N, ch);
+    
+    return 0;
+}
+
+void manualInput(int array[size][size], int N) {
+
+    printf("Input array manually: \n");
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            scanf_s("%d", &array[i][j]); //Manual input of array
+        }
+    }   
+}
+
+void randomInput(int array[size][size], int N) {
+    
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            array[i][j] = rand() % 201; // random fill of array from 0 to 200
         }
     }
 }
 
-void printMatrix(int arr[N_MAX][N_MAX], int n) {
-    printf("Matrix:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            printf("%d |", arr[i][j]);
+void displayArray(int array[size][size], int N, int ch) {
+    switch (ch) //Just to make sure what type of fill
+    {
+    case 1: printf("Manually inputed matrix: \n");
+        break;
+    case 2:printf("Randomly inputed matrix: \n");
+        break;
+    }
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            printf("%d | ", array[i][j]);
         }
         printf("\n");
     }
-}
-void replaceZeros(int arr[N_MAX][N_MAX], int n) {
-    int endRow = n - 1;
-    int endCol;
-
-    if (n % 2 == 0) {
-        endCol = n / 2 - 1;
-    }
-    else {
-        endCol = n / 2;
-    }
-    for (int i = 1; i < endRow; i++) {
-        for (int j = 0; j < endCol; ++j) {
-            if (i >= j) {
-                arr[i][j] = 0;
-            }
-        }
-    }
-}
-
-int main() {
-    int n;
-
-    printf("Enter the size of the matrix (6 <= N <= 10): ");
-    scanf_s("%d", &n);
-
-    if (n < N_MIN || n > N_MAX) {
-        printf("Invalid matrix size. Please enter a value between %d and %d.\n", N_MIN, N_MAX);
-        return 1;
-    }
-
-    int matrix[N_MAX][N_MAX];
-
-    printf("Choose an option:\n");
-    printf("1. Manual input\n");
-    printf("2. Random fill\n");
-
-    int option;
-    scanf_s("%d", &option);
-
-    switch (option) {
-    case 1:
-        manualInput(matrix, n);
-        break;
-    case 2:
-        randomFill(matrix, n);
-        break;
-    default:
-        printf("Invalid option. Exiting...\n");
-        return 1;
-    }
-
-    printf("\n");
-    printMatrix(matrix, n);
-
-    replaceZeros(matrix, n);
-
-    printf("\n");
-    printf("Matrix after replacing zeros in the left sector:\n");
-    printMatrix(matrix, n);
-
-    return 0;
 }
