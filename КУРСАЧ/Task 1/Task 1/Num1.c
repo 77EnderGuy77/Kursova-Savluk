@@ -1,6 +1,6 @@
 #include "Header.h"
 
-void paste(char s[], char s1[], int n) {
+void paste_num1(char s[], char s1[], int n) {
     int i, j;
     int len1 = strlen(s1);
     int len = strlen(s);
@@ -20,24 +20,22 @@ void paste(char s[], char s1[], int n) {
     }
 }
 
-int Num1() {
+void Num1() {
     char s[100], s1[100];
     int n;
 
     printf("Enter a string: ");
-    gets_s(s, sizeof(s), stdin);
+    scanf("%s", s);
     s[strcspn(s, "\n")] = 0;
 
     printf("Enter a string to paste: ");
-    gets_s(s1, sizeof(s1), stdin);
+    scanf("%s", s1);
     s1[strcspn(s1, "\n")] = 0;
 
     printf("Enter a position to paste: ");
     scanf_s("%d", &n);
 
-    paste(s, s1, n);
+    paste_num1(s, s1, n);
 
     printf("Resulting string: %s\n", s);
-
-    return 0;
 }
