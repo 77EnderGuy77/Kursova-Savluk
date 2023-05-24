@@ -37,7 +37,9 @@ int main() {
     }
 
     displayArray(array, N, ch);
-    
+
+    formVector(array, N);
+
     return 0;
 }
 
@@ -57,7 +59,7 @@ void randomInput(int array[size][size], int N) {
     
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            array[i][j] = rand() % 201; // random fill of array from 0 to 200
+            array[i][j] = rand() % 201 - 100; // random fill of array from -100 to 200
         }
     }
 }
@@ -76,4 +78,33 @@ void displayArray(int array[size][size], int N, int ch) {
         }
         printf("\n");
     }
+}
+
+void formVector(int array[size][size], int N) {
+    int diff[size];
+
+    for (int i = 0; i < N; i++)
+    {
+        int min = array[i][0];
+        int max = array[i][0];
+        for (int j = 0; j < N; j++)
+        {
+            if (array[i][j] < min) {
+                min = array[i][j];
+            }
+            if (array[i][j] > max) {
+                max = array[i][j];
+            }
+        }
+        diff[i] = max - min;
+    }
+
+    printf("Vector of differences of the largest and smallest values in each row:\n");
+
+    printf("Value:");
+    for (int i = 0; i < N; i++) {
+        printf("%d ", diff[i]);
+    }
+
+    printf("\n");
 }
