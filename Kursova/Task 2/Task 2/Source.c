@@ -72,7 +72,7 @@ void displayArray(int array[size][size], int N, int ch) {
     case 2:printf("Randomly inputed matrix: \n");
         break;
     }
-    for (int i = 0; i < N; i++){
+    for (int i = 0; i < N; i++){ //print of array  
         for (int j = 0; j < N; j++){
             printf("%d | ", array[i][j]);
         }
@@ -101,7 +101,7 @@ void formVector(int array[size][size], int N) {
 
     printf("Vector of differences of the largest and smallest values in each row:\n");
 
-    printf("Value:");
+    printf("Value:");//print values of rows 
     for (int i = 0; i < N; i++) {
         printf("%d ", diff[i]);
     }
