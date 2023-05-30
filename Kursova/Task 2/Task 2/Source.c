@@ -16,7 +16,7 @@ int main() {
     srand(time(NULL));
 
     printf("Enter the size of the matrix (6 <= N <= 10): ");
-    scanf("%d", &N);
+    scanf_s("%d", &N);
 
     if (N < 6 || N > 10) { //Fail check
         printf("Invalid size....");
@@ -24,7 +24,7 @@ int main() {
     }
 
     printf("Choose type of input ( 1- Manual, 2 - Random): ");
-    scanf("%d", &ch);
+    scanf_s("%d", &ch);
     
     switch (ch) //option of input
     {
