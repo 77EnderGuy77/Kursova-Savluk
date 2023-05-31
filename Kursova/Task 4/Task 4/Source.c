@@ -2,16 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_COUNTRY_LENGTH 50
-#define MAX_BRAND_LENGTH 50
-
+// Structure to store TV information
 typedef struct {
-    char country[MAX_COUNTRY_LENGTH];
-    char brand[MAX_BRAND_LENGTH];
+    char country[50];
+    char brand[50];
     int diagonalSize;
     float price;
-    char date[11]; // Assuming date format: "yyyy-mm-dd"
+    char date[11]; // Assuming date format: "dd-mm-yyyy"
 } Television;
+
+// Function prototypes
+void linearSearch(Television* tvArray, int size, float searchDiagonal);
+void cocktailSort(Television* tvArray, int size);
+void printTable(Television* tvArray, int size);
+void saveToFile(Television* tvArray, int size, const char* filename);
 
 int compareDiagonalSize(const void* a, const void* b) {
     const Television* tv1 = (const Television*)a;
@@ -19,7 +23,88 @@ int compareDiagonalSize(const void* a, const void* b) {
     return tv1->diagonalSize - tv2->diagonalSize;
 }
 
-void shakerSort(Television* arr, int size) {
+int main(int argc, char* argv[]) {
+    char filename[100];
+    if (argc > 1) {
+        strncpy(filename, argv[1], sizeof(filename));
+    }
+    else {
+        printf("Enter the filename: ");
+        fgets(filename, sizeof(filename), stdin);
+        filename[strcspn(filename, "\n")] = '\0';
+    }
+
+    int size;
+    printf("Enter the number of TVs: ");
+    scanf("%d", &size);
+    getchar(); // Clear the newline character from the input buffer
+
+    Television* tvArray = (Television*)malloc(size * sizeof(Television));
+    if (tvArray == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
+    for (int i = 0; i < size; i++) {
+        printf("\nEnter information for TV %d:\n", i + 1);
+        printf("Country: ");
+        fgets(tvArray[i].country, sizeof(tvArray[i].country), stdin);
+        tvArray[i].country[strcspn(tvArray[i].country, "\n")] = '\0';
+
+        printf("Brand: ");
+        fgets(tvArray[i].brand, sizeof(tvArray[i].brand), stdin);
+        tvArray[i].brand[strcspn(tvArray[i].brand, "\n")] = '\0';
+
+        printf("Diagonal Size: ");
+        scanf("%d", &tvArray[i].diagonalSize);
+        getchar(); // Clear the newline character from the input buffer
+
+        printf("Price: ");
+        scanf("%f", &tvArray[i].price);
+        getchar(); // Clear the newline character from the input buffer
+
+        printf("Sale Date: ");
+        fgets(tvArray[i].date, sizeof(tvArray[i].date), stdin);
+        tvArray[i].date[strcspn(tvArray[i].date, "\n")] = '\0';
+
+        getchar(); // Clear the newline character from the input buffer
+    }
+
+
+    // Search TVs by diagonal size
+    float searchDiagonal;
+    printf("\nEnter the diagonal size to search for: ");
+    scanf("%f", &searchDiagonal);
+
+    linearSearch(tvArray, size, searchDiagonal);
+
+    // Sort TVs by diagonal size using qsort
+    qsort(tvArray, size, sizeof(Television), compareDiagonalSize);
+
+    // Print the table of TVs
+    printf("\nTV Sales Information:\n");
+    printTable(tvArray, size);
+
+    // Save the table to a file
+    saveToFile(tvArray, size, filename);
+
+    // Free dynamically allocated memory
+    free(tvArray);
+
+    return 0;
+}
+
+void linearSearch(Television* tvArray, int size, float searchDiagonal) {
+    int count = 0;
+    for (int i = 0; i < size; i++) {
+        if (tvArray[i].diagonalSize == searchDiagonal && strcmp(tvArray[i].brand, "LG") == 0) {
+            count++;
+        }
+    }
+    printf("\nNumber of sold LG TVs with diagonal size %.2f: %d\n", searchDiagonal, count);
+}
+
+void cocktailSort(Television* arr, int size) {
     int left = 0;
     int right = size - 1;
     int swapped = 0;
@@ -53,148 +138,32 @@ void shakerSort(Television* arr, int size) {
     } while (swapped);
 }
 
-int countLgTelevisions(Television* arr, int size) {
-    int count = 0;
-    for (int i = 0; i < size; i++) {
-        if (strcmp(arr[i].brand, "LG") == 0) {
-            count++;
-        }
-    }
-    return count;
-}
-
-int linearSearchByDiagonalSize(Television* arr, int size, int targetSize) {
-    for (int i = 0; i < size; i++) {
-        if (arr[i].diagonalSize == targetSize) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int binarySearchByDiagonalSize(Television* arr, int size, int targetSize) {
-    int left = 0;
-    int right = size - 1;
-
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-
-        if (arr[mid].diagonalSize == targetSize) {
-            return mid;
-        }
-
-        if (arr[mid].diagonalSize < targetSize) {
-            left = mid + 1;
-        }
-        else {
-            right = mid - 1;
-        }
-    }
-
-    return -1;
-}
-
-void printTable(Television* arr, int size) {
-    printf("Country\t\tBrand\t\tDiagonal Size\tPrice\t\tDate\n");
-    printf("--------------------------------------------------------------------------\n");
+void printTable(Television* tvArray, int size) {
+    printf("\n-------------------------------------------------------------------------------------------\n");
+    printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n", "Country", "Brand", "Diagonal Size", "Price", "Sale Date");
+    printf("-------------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < size; i++) {
-        printf("%s %s %d\" %.2f %s",
-            arr[i].country, arr[i].brand, arr[i].diagonalSize, arr[i].price, arr[i].date);
+        printf("| %-15s | %-15s | %-15d | %-15.2f | %-15s |\n",
+            tvArray[i].country, tvArray[i].brand, tvArray[i].diagonalSize, tvArray[i].price, tvArray[i].date);
     }
+
+    printf("-------------------------------------------------------------------------------------------\n");
 }
 
-void writeTableToFile(Television* arr, int size, const char* filename) {
+void saveToFile(Television* tvArray, int size, const char* filename) {
     FILE* file = fopen(filename, "w");
-
     if (file == NULL) {
-        printf("Error opening file!\n");
+        printf("Failed to open the file for writing.\n");
         return;
     }
 
-    fprintf(file, "Country\t\tBrand\t\tDiagonal Size\tPrice\t\tDate\n");
-    fprintf(file, "---------------------------------------------------------------\n");
-
+    fprintf(file, "Country,Brand,Diagonal Size,Price,Sale Date\n");
     for (int i = 0; i < size; i++) {
-        fprintf(file, "%s\t\t%s\t\t%d\"\t\t%.2f\t\t%s\n",
-            arr[i].country, arr[i].brand, arr[i].diagonalSize, arr[i].price, arr[i].date);
+        fprintf(file, "%s,%s,%d,%.2f,%s\n",
+            tvArray[i].country, tvArray[i].brand, tvArray[i].diagonalSize, tvArray[i].price, tvArray[i].date);
     }
 
     fclose(file);
-}
-
-int main(int argc, char* argv[]) {
-    char filename[100];
-    int size;
-
-    if (argc > 1) {
-        strcpy(filename, argv[1]);
-    }
-    else {
-        printf("Enter the file name: ");
-        scanf("%s", filename);
-    }
-
-    FILE* file = fopen(filename, "r");
-
-    if (file == NULL) {
-        printf("Error opening file!\n");
-        return 1;
-    }
-
-    printf("Enter the number of televisions: ");
-    scanf("%d", &size);
-
-    Television* televisions = (Television*)malloc(size * sizeof(Television));
-
-    if (televisions == NULL) {
-        printf("Memory allocation failed!\n");
-        fclose(file);
-        return 1;
-    }
-
-    for (int i = 0; i < size; i++) {
-        fscanf(file, "%s %s %d %f %s",
-            televisions[i].country, televisions[i].brand, &televisions[i].diagonalSize,
-            &televisions[i].price, televisions[i].date);
-    }
-
-    fclose(file);
-
-    shakerSort(televisions, size);
-
-    printf("Table of televisions:\n");
-    printTable(televisions, size);
-
-    printf("\nNumber of LG televisions sold in the last three months: %d\n",
-        countLgTelevisions(televisions, size));
-
-    int targetSize;
-    printf("\nEnter the diagonal size to search: ");
-    scanf("%d", &targetSize);
-
-    int linearIndex = linearSearchByDiagonalSize(televisions, size, targetSize);
-    int binaryIndex = binarySearchByDiagonalSize(televisions, size, targetSize);
-
-    if (linearIndex != -1) {
-        printf("\nLinear Search: Television with diagonal size %d found at index %d\n",
-            targetSize, linearIndex);
-    }
-    else {
-        printf("\nLinear Search: Television with diagonal size %d not found\n", targetSize);
-    }
-
-    if (binaryIndex != -1) {
-        printf("Binary Search: Television with diagonal size %d found at index %d\n",
-            targetSize, binaryIndex);
-    }
-    else {
-        printf("Binary Search: Television with diagonal size %d not found\n", targetSize);
-    }
-
-    writeTableToFile(televisions, size, "output.txt");
-
-    free(televisions);
-
-    return 0;
+    printf("Table saved to %s.\n", filename);
 }
