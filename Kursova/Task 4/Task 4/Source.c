@@ -22,16 +22,16 @@ int main(int argc, char* argv[]) {
     char filename[100];
     int fromFile = 0;
 
-    if (argc > 1) {
+    if (argc > 1) {//Check if name of txt file was entered in terminal like this ./Source tv_info.txt
         strncpy(filename, argv[1], sizeof(filename));
         fromFile = 1;
     }
     else {
-        printf("Enter the filename (or leave it blank to input from keyboard): ");
+        printf("Enter the filename (or leave it blank to input from keyboard): ");//Check if name of .txt file was entered or skiped
         fgets(filename, sizeof(filename), stdin);
         filename[strcspn(filename, "\n")] = '\0';
 
-        if (strlen(filename) > 0) {
+        if (strlen(filename) > 0) {//Final check if name was entered
             fromFile = 1;
         }
     }
@@ -56,8 +56,9 @@ int main(int argc, char* argv[]) {
         }
 
         for (int i = 0; i < size; i++) {
-            fscanf(file, "%[^,],%[^,],%d,%f,%[^\n]%*c",
-                tvArray[i].country, tvArray[i].brand, &tvArray[i].diagonalSize, &tvArray[i].price, tvArray[i].date);
+            fscanf(file, "%[^,],%[^,],%d,%f,%[^\n]%*c", //%[^,] - is  format specifier that matches a sequence of characters until a coma is encountered
+                //%[^\n] - format specifier that matches a sequence of characters until a newline character (\n) is encountered
+                tvArray[i].country, tvArray[i].brand, & tvArray[i].diagonalSize, & tvArray[i].price, tvArray[i].date);
         }
 
         fclose(file);
@@ -108,8 +109,11 @@ int main(int argc, char* argv[]) {
         printf("Do you want to save the table to a file? (Y/N): ");
         scanf(" %c", &saveOption);
 
-        if (saveOption == 'Y' || saveOption == 'y') {
-            saveToFile(tvArray, size, filename);
+       if (saveOption == 'Y' || saveOption == 'y') {
+            char saveFilename[100];
+            printf("Enter the filename to save the table: ");
+            scanf("%s", saveFilename);
+            saveToFile(tvArray, size, saveFilename);
         }
     } else {
         char saveOption;
@@ -133,7 +137,7 @@ int main(int argc, char* argv[]) {
 void linearSearch(Television* tvArray, int size, float searchDiagonal) {
     int count = 0;
     for (int i = 0; i < size; i++) {
-        if (tvArray[i].diagonalSize == searchDiagonal && strcmp(tvArray[i].brand, "LG") == 0) {
+        if (tvArray[i].diagonalSize == searchDiagonal && strcmp(tvArray[i].brand, "LG") == 0) { //Finding the TV with wanted diagonal
             count++;
         }
     }
@@ -154,16 +158,16 @@ void cocktailSort(Television* arr, int size) {
     do {
         swapped = 0;
 
-        for (int i = left; i < right; i++) {
+        for (int i = left; i < right; i++) { 
             if (strcmp(arr[i].date, arr[i + 1].date) > 0) {
-                Television temp = arr[i];
+                Television temp = arr[i]; 
                 arr[i] = arr[i + 1];
                 arr[i + 1] = temp;
                 swapped = 1;
             }
         }
 
-        if (!swapped) break;
+        if (!swapped) break; //Check if all is sorting happened(O - exit, 1 - Continue) 
 
         right--;
 
@@ -180,7 +184,7 @@ void cocktailSort(Television* arr, int size) {
     } while (swapped);
 }
 
-void printTable(Television* tvArray, int size) {
+void printTable(Television* tvArray, int size) { //Print Tabel of TV's 
     printf("\n-------------------------------------------------------------------------------------------\n");
     printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n", "Country", "Brand", "Diagonal Size", "Price", "Sale Date");
     printf("-------------------------------------------------------------------------------------------\n");
@@ -193,7 +197,7 @@ void printTable(Television* tvArray, int size) {
     printf("-------------------------------------------------------------------------------------------\n");
 }
 
-void saveToFile(Television* tvArray, int size, const char* filename) {
+void saveToFile(Television* tvArray, int size, const char* filename) { //Save simple table to file 
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
         printf("Failed to open the file for writing.\n");
