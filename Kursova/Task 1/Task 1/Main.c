@@ -27,7 +27,7 @@ int quantity_indexed(char s[], char p[]) {
 
 // Function to count the occurrences of a substring using pointers
 int quantity_pointers(char* s, char* p) {
-    int count = 1;
+    int count = 0;
     char* s_ptr, * p_ptr;
 
     for (s_ptr = s; *s_ptr != '\0'; s_ptr++) {
@@ -39,16 +39,19 @@ int quantity_pointers(char* s, char* p) {
                     break;
             }
 
-            // If the entire substring matches, increment the count and adjust the pointer accordingly
+            // If the entire substring matches, increment the count
             if (*p_ptr == '\0') {
                 count++;
-                s_ptr--;
             }
+            
+            s_ptr--;
+            p_ptr--;
         }
     }
 
     return count;
 }
+
 
 int main() {
     char s[100], p[100];
