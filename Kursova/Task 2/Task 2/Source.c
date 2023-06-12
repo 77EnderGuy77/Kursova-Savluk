@@ -15,14 +15,14 @@ int main() {
 
     srand(time(NULL));
 
-    printf("Enter the size of the matrix (6 <= N <= 10): ");
-    scanf_s("%d", &N);
+    do {
+        printf("Enter the size of the matrix (6 <= N <= 10): ");
+        scanf_s("%d", &N);
 
-    if (N < 6 || N > 10) { // Check for valid size
-        printf("Invalid size....");
-        return 1;
-    }
-
+        if (N < 6 || N > 10) { // Check for invalid size
+            printf("Invalid size....\n");
+        }
+    } while (N < 6 || N > 10);
     printf("Choose the type of input (1 - Manual, 2 - Random): ");
     scanf_s("%d", &ch);
 
