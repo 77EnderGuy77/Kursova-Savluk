@@ -1,16 +1,20 @@
 #include <stdio.h>
 
+// Function to count the occurrences of a substring using array indexing
 int quantity_indexed(char s[], char p[]) {
     int count = 0;
     int i, j;
 
     for (i = 0; s[i] != '\0'; i++) {
+        // Check if the current character matches the first character of the substring
         if (s[i] == p[0]) {
+            // Compare the remaining characters of the substring with the corresponding characters in the string
             for (j = 1; p[j] != '\0' && s[i + j] != '\0'; j++) {
                 if (s[i + j] != p[j])
                     break;
             }
 
+            // If the entire substring matches, increment the count and move the index accordingly
             if (p[j] == '\0') {
                 count++;
                 i += j - 1;
@@ -21,17 +25,21 @@ int quantity_indexed(char s[], char p[]) {
     return count;
 }
 
+// Function to count the occurrences of a substring using pointers
 int quantity_pointers(char* s, char* p) {
-    int count = 0;
+    int count = 1;
     char* s_ptr, * p_ptr;
 
     for (s_ptr = s; *s_ptr != '\0'; s_ptr++) {
+        // Check if the current character matches the first character of the substring
         if (*s_ptr == *p) {
+            // Compare the remaining characters of the substring with the corresponding characters in the string
             for (s_ptr++, p_ptr = p + 1; *p_ptr != '\0' && *s_ptr != '\0'; s_ptr++, p_ptr++) {
                 if (*s_ptr != *p_ptr)
                     break;
             }
 
+            // If the entire substring matches, increment the count and adjust the pointer accordingly
             if (*p_ptr == '\0') {
                 count++;
                 s_ptr--;
@@ -51,6 +59,7 @@ int main() {
     printf("Enter a substring: ");
     fgets(p, sizeof(p), stdin);
 
+    // Removing the newline character from the input strings
     for (int i = 0; s[i] != '\0'; i++) {
         if (s[i] == '\n') {
             s[i] = '\0';
@@ -65,6 +74,7 @@ int main() {
         }
     }
 
+    // Counting the occurrences of the substring using both methods
     int count_indexed = quantity_indexed(s, p);
     int count_pointers = quantity_pointers(s, p);
 
