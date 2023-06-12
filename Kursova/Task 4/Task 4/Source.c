@@ -56,8 +56,9 @@ int main(int argc, char* argv[]) {
         }
 
         for (int i = 0; i < size; i++) {
-            fscanf(file, "%[^,],%[^,],%d,%f,%[^\n]%*c", //%[^,] - is  format specifier that matches a sequence of characters until a coma is encountered
+            fscanf(file, "%[^,], %[^,], %d, %f, %[^\n]%*c", //%[^,] - is  format specifier that matches a sequence of characters until a coma is encountered
                 //%[^\n] - format specifier that matches a sequence of characters until a newline character (\n) is encountered
+                //%*c specifies that one character should be read from the input, but it won't be assigned to any variable.
                 tvArray[i].country, tvArray[i].brand, & tvArray[i].diagonalSize, & tvArray[i].price, tvArray[i].date);
         }
 
@@ -206,7 +207,7 @@ void saveToFile(Television* tvArray, int size, const char* filename) { //Save si
 
     fprintf(file, "Country,Brand,Diagonal Size,Price,Sale Date\n");
     for (int i = 0; i < size; i++) {
-        fprintf(file, "%s,%s,%d,%.2f,%s\n",
+        fprintf(file, "%s, %s, %d, %.2f, %s\n",
             tvArray[i].country, tvArray[i].brand, tvArray[i].diagonalSize, tvArray[i].price, tvArray[i].date);
     }
 
