@@ -199,13 +199,13 @@ void printTable(Television* tvArray, int size) { //Print Tabel of TV's
 }
 
 void saveToFile(Television* tvArray, int size, const char* filename) { //Save simple table to file 
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(filename, "a");
     if (file == NULL) {
         printf("Failed to open the file for writing.\n");
         return;
     }
 
-    fprintf(file, "Country,Brand,Diagonal Size,Price,Sale Date\n");
+   
     for (int i = 0; i < size; i++) {
         fprintf(file, "%s, %s, %d, %.2f, %s\n",
             tvArray[i].country, tvArray[i].brand, tvArray[i].diagonalSize, tvArray[i].price, tvArray[i].date);
