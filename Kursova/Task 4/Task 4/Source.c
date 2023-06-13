@@ -22,16 +22,16 @@ int main(int argc, char* argv[]) {
     char filename[100];
     int fromFile = 0;
 
-    if (argc > 1) {//Check if name of txt file was entered in terminal like this ./Source tv_info.txt
+    if (argc > 1) {
         strncpy(filename, argv[1], sizeof(filename));
         fromFile = 1;
     }
     else {
-        printf("Enter the filename (or leave it blank to input from keyboard): ");//Check if name of .txt file was entered or skiped
+        printf("Enter the filename (or leave it blank to input from keyboard): ");
         fgets(filename, sizeof(filename), stdin);
         filename[strcspn(filename, "\n")] = '\0';
 
-        if (strlen(filename) > 0) {//Final check if name was entered
+        if (strlen(filename) > 0) {
             fromFile = 1;
         }
     }
@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+
     if (fromFile) {
         FILE* file = fopen(filename, "r");
         if (file == NULL) {
@@ -56,14 +57,13 @@ int main(int argc, char* argv[]) {
         }
 
         for (int i = 0; i < size; i++) {
-            fscanf(file, "%[^,], %[^,], %d, %f, %[^\n]%*c", //%[^,] - is  format specifier that matches a sequence of characters until a coma is encountered
-                //%[^\n] - format specifier that matches a sequence of characters until a newline character (\n) is encountered
-                //%*c specifies that one character should be read from the input, but it won't be assigned to any variable.
-                tvArray[i].country, tvArray[i].brand, & tvArray[i].diagonalSize, & tvArray[i].price, tvArray[i].date);
+            fscanf(file, "%[^,], %[^,], %d, %f, %[^\n]%*c",
+                tvArray[i].country, tvArray[i].brand, &tvArray[i].diagonalSize, &tvArray[i].price, tvArray[i].date);
         }
 
         fclose(file);
-    } else {
+    }
+    else {
         for (int i = 0; i < size; i++) {
             printf("\nEnter information for TV %d:\n", i + 1);
             printf("Country: ");
@@ -90,33 +90,41 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    printf("\nTV Sales Information:\n");
+    printTable(tvArray, size);
+
     // Search TVs by diagonal size
     float searchDiagonal;
     printf("\nEnter the diagonal size to search for: ");
     scanf("%f", &searchDiagonal);
 
-    linearSearch(tvArray, size, searchDiagonal);
+    // Sort TVs by date using cocktail sort
+    int srt;
+    printf("Do you want to sort information (1 - yes, 0 - no)?: ");
+    scanf("%d", &srt);
+    if (srt == 1) {
+        qsort(tvArray, size, sizeof(Television), compareDate);
+    }
 
-    // Sort TVs by date using qsort
-    qsort(tvArray, size, sizeof(Television), compareDate);
+    linearSearch(tvArray, size, searchDiagonal);
 
     // Print the table of TVs
     printf("\nTV Sales Information:\n");
     printTable(tvArray, size);
 
-    // Save the table to a file
     if (fromFile) {
         char saveOption;
         printf("Do you want to save the table to a file? (Y/N): ");
         scanf(" %c", &saveOption);
 
-       if (saveOption == 'Y' || saveOption == 'y') {
+        if (saveOption == 'Y' || saveOption == 'y') {
             char saveFilename[100];
             printf("Enter the filename to save the table: ");
             scanf("%s", saveFilename);
             saveToFile(tvArray, size, saveFilename);
         }
-    } else {
+    }
+    else {
         char saveOption;
         printf("Do you want to save the table to a file? (Y/N): ");
         scanf(" %c", &saveOption);
@@ -138,7 +146,7 @@ int main(int argc, char* argv[]) {
 void linearSearch(Television* tvArray, int size, float searchDiagonal) {
     int count = 0;
     for (int i = 0; i < size; i++) {
-        if (tvArray[i].diagonalSize == searchDiagonal && strcmp(tvArray[i].brand, "LG") == 0) { //Finding the TV with wanted diagonal
+        if (tvArray[i].diagonalSize == searchDiagonal && strcmp(tvArray[i].brand, "LG") == 0) {
             count++;
         }
     }
@@ -148,7 +156,18 @@ void linearSearch(Television* tvArray, int size, float searchDiagonal) {
 int compareDate(const void* a, const void* b) {
     const Television* tv1 = (const Television*)a;
     const Television* tv2 = (const Television*)b;
-    return strcmp(tv1->date, tv2->date);
+
+    int day1, month1, year1;
+    int day2, month2, year2;
+
+    sscanf(tv1->date, "%d-%d-%d", &day1, &month1, &year1);
+    sscanf(tv2->date, "%d-%d-%d", &day2, &month2, &year2);
+
+    if (year1 != year2)
+        return year1 - year2;
+    if (month1 != month2)
+        return month1 - month2;
+    return day1 - day2;
 }
 
 void cocktailSort(Television* arr, int size) {
@@ -159,16 +178,16 @@ void cocktailSort(Television* arr, int size) {
     do {
         swapped = 0;
 
-        for (int i = left; i < right; i++) { 
+        for (int i = left; i < right; i++) {
             if (strcmp(arr[i].date, arr[i + 1].date) > 0) {
-                Television temp = arr[i]; 
+                Television temp = arr[i];
                 arr[i] = arr[i + 1];
                 arr[i + 1] = temp;
                 swapped = 1;
             }
         }
 
-        if (!swapped) break; //Check if all is sorting happened(O - exit, 1 - Continue) 
+        if (!swapped) break;
 
         right--;
 
@@ -185,7 +204,7 @@ void cocktailSort(Television* arr, int size) {
     } while (swapped);
 }
 
-void printTable(Television* tvArray, int size) { //Print Tabel of TV's 
+void printTable(Television* tvArray, int size) {
     printf("\n-------------------------------------------------------------------------------------------\n");
     printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n", "Country", "Brand", "Diagonal Size", "Price", "Sale Date");
     printf("-------------------------------------------------------------------------------------------\n");
@@ -198,14 +217,13 @@ void printTable(Television* tvArray, int size) { //Print Tabel of TV's
     printf("-------------------------------------------------------------------------------------------\n");
 }
 
-void saveToFile(Television* tvArray, int size, const char* filename) { //Save simple table to file 
+void saveToFile(Television* tvArray, int size, const char* filename) {
     FILE* file = fopen(filename, "a");
     if (file == NULL) {
         printf("Failed to open the file for writing.\n");
         return;
     }
 
-   
     for (int i = 0; i < size; i++) {
         fprintf(file, "%s, %s, %d, %.2f, %s\n",
             tvArray[i].country, tvArray[i].brand, tvArray[i].diagonalSize, tvArray[i].price, tvArray[i].date);
